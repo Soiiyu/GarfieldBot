@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
-const slaps = require('./hugs.json')
+const hugs = require('./hugs.json')
 
 module.exports = {
     data: new SlashCommandBuilder()
