@@ -6,6 +6,7 @@ const fs = require('fs');
 const client = new Client({ intents: GatewayIntentBits.Guilds });
 client.commands = new Collection();
 client.commandArray = []
+client.color = 'f88340' // use as default color
 
 const functionFolders = fs.readdirSync(`./functions`)
 for (const folder of functionFolders) {

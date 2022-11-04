@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js')
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
 const slaps = require('./slaps.json')
 
 module.exports = {
@@ -12,7 +12,11 @@ module.exports = {
                 .setRequired(true)),
     async execute(interaction, client) {
         const user = interaction.options.getUser('user');
-        let randomSlap = slaps[Math.floor(Math.random() * slaps.length)]
-        await interaction.reply({content: `${interaction.user} slapped ${user}!\n${randomSlap}`})
+        const randomSlap = slaps[Math.floor(Math.random() * slaps.length)]
+        const embed = new EmbedBuilder()
+            .setImage(randomSlap)
+            .setColor(client.color)
+            .setDescription(`${interaction.user} slapped ${user}!`)
+        await interaction.reply({embeds: [embed]})
     }
 }
