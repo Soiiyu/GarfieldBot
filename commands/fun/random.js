@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js')
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -26,7 +26,11 @@ module.exports = {
     async execute(interaction, client) {
         const { options } = interaction
         const embed = new EmbedBuilder()
-            .setColor(client.color)
+            .setColor(client.color);
+        const button = new ButtonBuilder()
+            .setCustomId('reroll')
+            .setLabel('🔃 Re-roll')
+            .setStyle(ButtonStyle.Secondary);
         switch (options.getSubcommand()) {
             case 'number':
                 const num1 = options.getNumber('num1')
@@ -38,7 +42,7 @@ module.exports = {
                 const r = Math.floor(Math.random() * (max - min) + min)
                 embed.addFields({ name: 'Your number is', value: `**${r}**` })
                     .setFooter({ text: `range: ${min} - ${max}` })
-                await interaction.reply({ embeds: [embed], ephemeral: true })
+                await interaction.reply({ embeds: [embed], components: [new ActionRowBuilder().addComponents(button)], ephemeral: true })
                 break
             case 'word':
                 const words = options.getString('words').split(/\s*,\s*/)
@@ -48,6 +52,7 @@ module.exports = {
                     embed.addFields({ name: 'Your word is', value: `**${r}**` })
                         .setFooter({ text: `chose from ${words.length} words` })
                     await interaction.reply({ embeds: [embed], ephemeral: true })
+                    // await interaction.reply({ embeds: [embed], components: [new ActionRowBuilder().addComponents(button)], ephemeral: true })
                 }
                 break
             case 'order':
@@ -55,9 +60,9 @@ module.exports = {
                 if (list.length < 2) return await interaction.reply({ content: 'Please use a list of words seperated by a (,)\nexample: `apple, banana, orange`', ephemeral: true })
                 else {
                     const r = client.shuffleArray(list)
-                    embed.addFields({ name: 'Your randomized list is', value: `${r.map((word, i) => `${i+1}. ${word}`).join('\n')}` })
+                    embed.addFields({ name: 'Your randomized list is', value: r.map((word, i) => `${i + 1}. ${word}`).join('\n') })
                         .setFooter({ text: `total of ${list.length} words` })
-                    await interaction.reply({ embeds: [embed], ephemeral: true })
+                    await interaction.reply({ embeds: [embed], components: [new ActionRowBuilder().addComponents(button)], ephemeral: true })
                 }
         }
     }
