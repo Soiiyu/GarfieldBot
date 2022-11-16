@@ -4,7 +4,7 @@ const kicks = require('./kicks.json')
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('kick')
-        .setDescription('Kick someone! (not actuall kick)')
+        .setDescription('Kick someone! (not an actual kick)')
         .addUserOption(option => 
             option
                 .setName('user')
