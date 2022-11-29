@@ -1,11 +1,12 @@
 const Guild = require('../../schemas/guild')
-const { SlashCommandBuilder } = require('discord.js')
+const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js')
 const mongoose = require('mongoose')
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('suggestroom')
         .setDescription('Sets a text channel for suggestions.')
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
         .addChannelOption(option =>
             option
                 .setName('room')
