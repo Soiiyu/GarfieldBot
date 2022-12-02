@@ -9,10 +9,16 @@ module.exports = {
             option
                 .setName('suggestion')
                 .setDescription('What is your suggestion?')
-                .setRequired(true)),
+                .setRequired(true))
+        .addAttachmentOption(option =>
+            option
+                .setName('image')
+                .setDescription('Add an image with your suggestion')
+                .setRequired(false)),
     async execute(interaction, client) {
         let guildProfile = await Guild.findOne({ guildId: interaction.guild.id });
         const suggestion = interaction.options.getString('suggestion');
+        const attachment = interaction.options.getAttachment('image')
 
         if (!guildProfile) await interaction.reply('This server has not set up a suggestion room.')
         else {
@@ -24,9 +30,11 @@ module.exports = {
                 .setTitle('Suggestion')
                 .setColor(client.color)
                 .setDescription(suggestion)
-                const channel = client.channels.cache.get(guildProfile.suggestChannel)
-                await interaction.reply({ content: `Sent your suggestion to ${channel}`, ephemeral: true })
-                await channel.send({ embeds: [embed] })
+            if(attachment && attachment.contentType.includes('image')) embed.setImage(attachment.url)
+
+            const channel = client.channels.cache.get(guildProfile.suggestChannel)
+            await interaction.reply({ content: `Sent your suggestion to ${channel}`, ephemeral: true })
+            await channel.send({ embeds: [embed] })
         }
 
 
