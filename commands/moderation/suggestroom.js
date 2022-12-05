@@ -5,31 +5,55 @@ const mongoose = require('mongoose')
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('suggestroom')
-        .setDescription('Sets a text channel for suggestions.')
+        .setDescription('Set or remove a text channel for suggestions.')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-        .addChannelOption(option =>
-            option
-                .setName('room')
-                .setDescription('The room to send suggestions to.')
-                .setRequired(true)),
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('set')
+                .setDescription('Set a channel for suggestions')
+                .addChannelOption(option =>
+                    option
+                        .setName('room')
+                        .setDescription('The room to send suggestions to.')
+                        .setRequired(true))
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('remove')
+                .setDescription('Remove suggestions from your server.'))
+    ,
     async execute(interaction, client) {
         let guildProfile = await Guild.findOne({ guildId: interaction.guild.id });
         const room = interaction.options.getChannel('room');
 
-        if (!guildProfile) {
-            guildProfile = new Guild({
-                _id: mongoose.Types.ObjectId(),
-                guildId: interaction.guild.id,
-                suggestChannel: room.id
-            })
-            await guildProfile.save().catch(console.error);
-            console.log(`[Database] - Created guild data for ${interaction.guild.name}`)
-            await interaction.reply({ content: `Set suggestion room to ${room}` })
-        } else {
-            guildProfile.suggestChannel = room.id
-            await guildProfile.save().catch(console.error);
-            await interaction.reply({ content: `Changed suggestion room to ${room}` })
+        switch (interaction.options.getSubcommand()) {
+            case 'set':
+                if (!guildProfile) {
+                    guildProfile = new Guild({
+                        _id: mongoose.Types.ObjectId(),
+                        guildId: interaction.guild.id,
+                        suggestChannel: room.id
+                    })
+                    await guildProfile.save().catch(console.error);
+                    console.log(`[Database] - Created guild data for ${interaction.guild.name}`)
+                    await interaction.reply({ content: `Set suggestion room to ${room}`, ephemeral: true })
+                } else {
+                    guildProfile.suggestChannel = room.id
+                    await guildProfile.save().catch(console.error);
+                    await interaction.reply({ content: `Changed suggestion room to ${room}`, ephemeral: true })
+                }
+                break;
+            case 'remove':
+                if(!guildProfile) {
+                    await interaction.reply({ content: 'This server has not set up a suggestion room.', ephemeral: true })
+                } else {
+                    // currently deletes server db entry as nothing else uses the db.
+                    // when the time comes, change this to set guildProfile.suggeestChannel to null
+                    await guildProfile.delete().catch(console.error)
+                    console.log(`[Database] - Deleted guild data for ${interaction.guild.name}`)
+                    await interaction.reply({ content: 'Successfully removed suggestions from this server.', ephemeral: true })
+                }
+                break;
         }
-        
     }
 }

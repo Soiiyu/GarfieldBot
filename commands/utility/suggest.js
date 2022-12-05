@@ -20,7 +20,7 @@ module.exports = {
         const suggestion = interaction.options.getString('suggestion');
         const attachment = interaction.options.getAttachment('image')
 
-        if (!guildProfile) await interaction.reply('This server has not set up a suggestion room.')
+        if (!guildProfile) await interaction.reply({ content: 'This server has not set up a suggestion room.', ephemeral: true })
         else {
             const embed = new EmbedBuilder()
                 .setAuthor({
