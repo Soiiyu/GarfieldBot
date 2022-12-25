@@ -29,7 +29,8 @@ module.exports = {
             .setColor(client.color);
         const button = new ButtonBuilder()
             .setCustomId('reroll')
-            .setLabel('🔃 Re-roll')
+            .setEmoji('🔃')
+            .setLabel('Re-roll')
             .setStyle(ButtonStyle.Secondary);
         switch (options.getSubcommand()) {
             case 'number':
