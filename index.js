@@ -8,6 +8,7 @@ const client = new Client({ intents: GatewayIntentBits.Guilds });
 client.commands = new Collection();
 client.commandArray = []
 client.buttons = new Collection()
+client.selectMenus = new Collection()
 client.color = 'f88340' // use as default color
 
 const functionFolders = fs.readdirSync(`./functions`)

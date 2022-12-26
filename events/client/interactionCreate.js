@@ -17,13 +17,26 @@ module.exports = {
                 });
             }
         } else if (interaction.isButton()) {
+            // Buttons may specify id inside customId, by following the customId with _<ID>
             const { buttons } = client;
             const { customId } = interaction;
-            const button = buttons.get(customId);
+            const [ type, id ] = customId.split('_')
+            const button = buttons.get(type);
             if(!button) return new Error ('There is no code for this button')
 
             try {
-                await button.execute(interaction, client, button);
+                await button.execute(interaction, client, id);
+            } catch (error) {
+                console.log(error)
+            }
+        } else if (interaction.isSelectMenu()) {
+            const { selectMenus } = client;
+            const { customId } = interaction;
+            const selectMenu = selectMenus.get(customId)
+            if(!selectMenu) return new Error ('There is no code for this select menu')
+
+            try {
+                await selectMenu.execute(interaction, client);
             } catch (error) {
                 console.log(error)
             }
