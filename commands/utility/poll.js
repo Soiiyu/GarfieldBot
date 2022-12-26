@@ -34,7 +34,7 @@ module.exports = {
         const actionRow = new ActionRowBuilder()
 
         const endPoll = new ButtonBuilder()
-            .setCustomId('endpoll')
+            .setCustomId(`endpoll_${interaction.user.id}`)
             .setEmoji('🛑')
             .setLabel('End Poll')
             .setStyle(ButtonStyle.Secondary);
