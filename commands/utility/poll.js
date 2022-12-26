@@ -77,7 +77,7 @@ module.exports = {
             }).join('\n'))
             actionRow.addComponents(selectMenu)
         }
-        console.log(actionRow.components, actionRow.components[0].options.length)
+
         await interaction.reply({ embeds: [embed], components: [actionRow, new ActionRowBuilder().addComponents(endPoll)], fetchReply: true})
             .then(async msg => {
                 const pollData = new Poll({
