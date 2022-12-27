@@ -21,6 +21,7 @@ module.exports = {
     async execute(interaction, client) {
         const title = interaction.options.getString('title')
         const options = interaction.options.getString('options')?.split(/\s*,\s*/).filter(w => w !== '')
+        const optionCount = options ? options.length : 2
 
         const embed = new EmbedBuilder()
             .setColor(client.color)
@@ -39,16 +40,17 @@ module.exports = {
             .setLabel('End Poll')
             .setStyle(ButtonStyle.Secondary);
 
-        if (!options) { 
+        if (!options) {
             // if no options, send out a 'Yes No' poll
+            // setting index 0 of database votes to yes, and 1 to no
             const upvote = new ButtonBuilder()
-                .setCustomId('upvote')
-                .setEmoji('⬆️')
+                .setCustomId('poll-yesno_0')
+                .setEmoji('<:Yes:712682828302909481>')
                 .setLabel('0')
                 .setStyle(ButtonStyle.Success);
             const downvote = new ButtonBuilder()
-                .setCustomId('downvote')
-                .setEmoji('⬇️')
+                .setCustomId('poll-yesno_1')
+                .setEmoji('<:No:712682828332138586>')
                 .setLabel('0')
                 .setStyle(ButtonStyle.Danger);
 
@@ -59,7 +61,7 @@ module.exports = {
             embed.setDescription(options.map((option, i) => {
                 // creating a numbered button for each option, with id <i + 1>
                 const optionButton = new ButtonBuilder()
-                    .setCustomId(`poll-vote_${i + 1}`)
+                    .setCustomId(`poll-vote_${i}`)
                     .setEmoji(numEmote[i])
                     .setLabel('0')
                     .setStyle(ButtonStyle.Primary)
@@ -72,22 +74,22 @@ module.exports = {
                 .setCustomId('poll-menu')
                 .setPlaceholder('Select an option...')
             embed.setDescription(options.map((option, i) => {
-                selectMenu.addOptions({label: option, value: ``+i})
+                selectMenu.addOptions({ label: `0 - ${option}`, value: `` + i })
                 return `${i + 1}. ${option}`
             }).join('\n'))
             actionRow.addComponents(selectMenu)
         }
-
-        await interaction.reply({ embeds: [embed], components: [actionRow, new ActionRowBuilder().addComponents(endPoll)], fetchReply: true})
+        console.log(actionRow.components.length)
+        await interaction.reply({ embeds: [embed], components: [actionRow, new ActionRowBuilder().addComponents(endPoll)], fetchReply: true })
             .then(async msg => {
                 const pollData = new Poll({
                     _id: mongoose.Types.ObjectId(),
                     msgId: msg.id,
-                    buttonNumbers: (actionRow.components[0].options.length < 5),
-                    votes: new Array(Math.max(options.length, actionRow.components[0].options.length)).fill(1).map(() => [])
+                    pollType: options ? (options.length < 5 ? 'buttons' : 'selectmenu') : 'yesno',
+                    votes: new Array(optionCount).fill(1).map(() => [])
                 })
                 await pollData.save().catch(console.error);
-                console.log(`[Database] - New poll entry with ${options.length} options`)
+                console.log(`[Database] - New poll entry with ${optionCount} options`)
             })
             .catch(console.error)
     }
