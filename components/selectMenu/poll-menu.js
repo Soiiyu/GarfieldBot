@@ -25,7 +25,7 @@ module.exports = {
         interaction.message.components[0].components[0].data.options = interaction.message.components[0].components[0].data.options
             .map((option, i) => {
                 const temp = option.label.split(' ')
-                temp[0] = pollData.votes[i].length
+                temp[0] = `[${pollData.votes[i].length}]`
                 option.label = temp.join(' ')
                 return option
             })

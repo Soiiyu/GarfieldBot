@@ -16,7 +16,7 @@ module.exports = {
         .addStringOption(option =>
             option
                 .setName("options")
-                .setDescription('options seperated by (,) [minimum 2]')
+                .setDescription('(optional) options seperated by (,) [minimum 2]')
                 .setRequired(false)),
     async execute(interaction, client) {
         const title = interaction.options.getString('title')
@@ -74,7 +74,7 @@ module.exports = {
                 .setCustomId('poll-menu')
                 .setPlaceholder('Select an option...')
             embed.setDescription(options.map((option, i) => {
-                selectMenu.addOptions({ label: `0 - ${option}`, value: `` + i })
+                selectMenu.addOptions({ label: `[0] - ${option}`, value: `` + i })
                 return `${i + 1}. ${option}`
             }).join('\n'))
             actionRow.addComponents(selectMenu)
