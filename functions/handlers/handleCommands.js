@@ -5,12 +5,12 @@ const fs = require('fs')
 module.exports = (client) => {
     client.handleCommands = async () => {
         const commandFolders = fs.readdirSync('./commands')
+        const { commands, commandArray } = client;
         for (const folder of commandFolders) {
             const commandFiles = fs
                 .readdirSync(`./commands/${folder}`)
                 .filter(file => file.endsWith('.js'))
 
-            const { commands, commandArray } = client;
             for (const file of commandFiles) {
                 const command = require(`../../commands/${folder}/${file}`);
                 commands.set(command.data.name, command);
@@ -27,6 +27,13 @@ module.exports = (client) => {
             await rest.put(Routes.applicationCommands(clientId), {
                 body: client.commandArray
             });
+
+            // Appending command id's to commandArray
+            const commands = await rest.get(Routes.applicationCommands(clientId))
+            commands.forEach(({id, name}) => {
+                commandArray.find(cmd => cmd.name == name).id = id
+            })
+            console.log(client.commandArray)
         } catch(error) {
             console.error(error);
         }
