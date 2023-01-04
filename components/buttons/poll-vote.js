@@ -21,7 +21,11 @@ module.exports = {
         await pollData.save().catch(console.error)
 
         console.log(`[Database] - someone voted on a poll`)
-        // changing the numbers on the buttons
+        // updating total votes number (fields[2] because of the empty field)
+        const totalVotes = Math.max(1, pollData.votes.reduce((votes, curr) => votes + curr.length, 0))
+        interaction.message.embeds[0].fields[2].value = totalVotes.toString()
+
+        // updating the numbers on the buttons
         const buttons = interaction.message.components[0]
         buttons.components = buttons.components.map((button, i) => {
             button.data.label = pollData.votes[i].length.toString()

@@ -8,7 +8,7 @@ module.exports = {
         const pollData = await Poll.findOne({ msgId: interaction.message.id });
         if (!pollData) return await interaction.reply({ content: 'Something went wrong when voting on this poll.', ephemeral: true })
 
-        if (pollData.votes[interaction.values[0]].includes(interaction.user.id)) return
+        if (pollData.votes[interaction.values[0]].includes(interaction.user.id)) return await interaction.deferUpdate()
 
         pollData.votes = pollData.votes.map(option => {
             if (option.includes(interaction.user.id)) option.splice(option.indexOf(interaction.user.id), 1)
@@ -21,6 +21,10 @@ module.exports = {
         await pollData.save().catch(console.error)
 
         console.log(`[Database] - someone voted on a poll using select menu`)
+        // updating total votes number (fields[2] because of the empty field)
+        const totalVotes = Math.max(1, pollData.votes.reduce((votes, curr) => votes + curr.length, 0))
+        interaction.message.embeds[0].fields[2].value = totalVotes.toString()
+        
         // changing the numbers in the select menu
         interaction.message.components[0].components[0].data.options = interaction.message.components[0].components[0].data.options
             .map((option, i) => {

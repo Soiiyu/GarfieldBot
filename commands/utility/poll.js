@@ -3,6 +3,7 @@ const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, Butt
 const mongoose = require('mongoose')
 
 const numEmote = ['1⃣', '2⃣', '3⃣', '4⃣']
+const defaultTime = 2 * 24 * 60 * 60 * 1000 // 2 Days
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -23,6 +24,8 @@ module.exports = {
         const options = interaction.options.getString('options')?.split(/\s*,\s*/).filter(w => w !== '')
         const optionCount = options ? options.length : 2
 
+        const endTime = Date.now() + defaultTime
+
         const embed = new EmbedBuilder()
             .setColor(client.color)
             .setTitle(title)
@@ -30,6 +33,23 @@ module.exports = {
                 iconURL: interaction.user.displayAvatarURL(),
                 name: interaction.user.tag
             })
+            .addFields([
+                {
+                    name: 'Ends in',
+                    value: `<t:${Math.round(endTime / 1000)}:R>`,
+                    inline: true
+                },
+                {
+                    name: '\u200b',
+                    value: '\u200b',
+                    inline: true
+                },
+                {
+                    name: 'Votes',
+                    value: '0',
+                    inline: true
+                }
+            ])
 
         // Action row for voting buttons and drop-down menus to add to
         const actionRow = new ActionRowBuilder()
@@ -66,7 +86,7 @@ module.exports = {
                     .setLabel('0')
                     .setStyle(ButtonStyle.Primary)
                 actionRow.addComponents(optionButton)
-                return `${i + 1}. ${option}`
+                return `**${i + 1}.** ${option}`
             }).join('\n'))
         } else {
             // if there are more than 4 options, send a poll with a drop-down menu
@@ -75,17 +95,18 @@ module.exports = {
                 .setPlaceholder('Select an option...')
             embed.setDescription(options.map((option, i) => {
                 selectMenu.addOptions({ label: `[0] - ${option}`, value: `` + i })
-                return `${i + 1}. ${option}`
+                return `**${i + 1}.** ${option}`
             }).join('\n'))
             actionRow.addComponents(selectMenu)
         }
-        console.log(actionRow.components.length)
+
         await interaction.reply({ embeds: [embed], components: [actionRow, new ActionRowBuilder().addComponents(endPoll)], fetchReply: true })
             .then(async msg => {
                 const pollData = new Poll({
                     _id: mongoose.Types.ObjectId(),
                     msgId: msg.id,
                     pollType: options ? (options.length < 5 ? 'buttons' : 'selectmenu') : 'yesno',
+                    endTime,
                     votes: new Array(optionCount).fill(1).map(() => [])
                 })
                 await pollData.save().catch(console.error);

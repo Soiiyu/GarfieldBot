@@ -10,7 +10,11 @@ module.exports = {
         if (interaction.user.id !== id) return await interaction.deferUpdate()
 
         const embed = interaction.message.embeds[0]
-        const totalVotes = Math.max(1, pollData.votes.reduce((votes, curr) => votes + curr.length, 0))
+        const highestVotes = [0]
+        const totalVotes = Math.max(1, pollData.votes.reduce((votes, curr) => {
+            if(curr.length > highestVotes[0]) highestVotes[0] = curr.length
+            return votes + curr.length
+        }, 0))
         switch (pollData.pollType) {
             case 'yesno':
                 const [yes, no] = pollData.votes
@@ -20,12 +24,15 @@ module.exports = {
             case 'selectmenu':
                 embed.data.description = embed.data.description
                     .split('\n')
-                    .map((option, i) => `[${Math.round(100 * pollData.votes[i].length / totalVotes)}%] ${option}`)
+                    .map((option, i) => boldText(`[${Math.round(100 * pollData.votes[i].length / totalVotes)}%] ${option}`, pollData.votes[i].length == highestVotes[0] && pollData.votes[i].length !== 0))
                     .join('\n')
                 break
         }
 
-        embed.data.footer = { text: 'poll ended' }
+        // embed.data.footer = { text: 'poll ended' }
+        // updating the "End in" field
+        interaction.message.embeds[0].fields[0].name = 'Ended'
+        interaction.message.embeds[0].fields[0].value = `<t:${Math.round(Date.now() / 1000)}:R>`
 
         // Disable 'end poll' button
         interaction.message.components[1].components[0].data.disabled = true
@@ -37,5 +44,6 @@ module.exports = {
 }
 
 function boldText(text, condition) {
+    text = text.replace(/\*\*/g, '')
     return condition ? `**${text}**` : text
 }
