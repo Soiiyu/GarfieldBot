@@ -21,6 +21,10 @@ module.exports = {
             subcommand
                 .setName('remove')
                 .setDescription('Remove suggestions from your server.'))
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('info')
+                .setDescription('Info about the suggestion room status of this server.'))
     ,
     async execute(interaction, client) {
         let guildProfile = await Guild.findOne({ guildId: interaction.guild.id });
@@ -44,7 +48,7 @@ module.exports = {
                 }
                 break;
             case 'remove':
-                if(!guildProfile) {
+                if (!guildProfile) {
                     await interaction.reply({ content: 'This server has not set up a suggestion room.', ephemeral: true })
                 } else {
                     // currently deletes server db entry as nothing else uses the db.
@@ -52,6 +56,13 @@ module.exports = {
                     await guildProfile.delete().catch(console.error)
                     console.log(`[Database] - Deleted guild data for ${interaction.guild.name}`)
                     await interaction.reply({ content: 'Successfully removed suggestions from this server.', ephemeral: true })
+                }
+                break;
+            case 'info':
+                if (!guildProfile) {
+                    await interaction.reply({ content: 'This server has not set up a suggestion room.', ephemeral: true })
+                } else {
+                    await interaction.reply({ content: `This server set <#${guildProfile.suggestChannel}> as the suggestion room.`, ephemeral: true })
                 }
                 break;
         }
