@@ -33,7 +33,7 @@ module.exports = (client) => {
             commands.forEach(({id, name}) => {
                 commandArray.find(cmd => cmd.name == name).id = id
             })
-            console.log(client.commandArray)
+            // console.log(client.commandArray)
         } catch(error) {
             console.error(error);
         }
