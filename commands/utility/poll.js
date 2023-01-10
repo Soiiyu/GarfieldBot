@@ -105,6 +105,7 @@ module.exports = {
                 const pollData = new Poll({
                     _id: mongoose.Types.ObjectId(),
                     msgId: msg.id,
+                    channelId: interaction.channel.id,
                     pollType: options ? (options.length < 5 ? 'buttons' : 'selectmenu') : 'yesno',
                     endTime,
                     votes: new Array(optionCount).fill(1).map(() => [])
