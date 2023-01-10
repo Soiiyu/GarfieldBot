@@ -5,11 +5,15 @@ module.exports = {
         name: 'poll-yesno'
     },
     async execute(interaction, client, id) {
+        // Try finding a poll with the interaction.message.id
         const pollData = await Poll.findOne({ msgId: interaction.message.id });
         if (!pollData) return await interaction.reply({ content: 'Something went wrong when voting on this poll.', ephemeral: true })
 
+        // If the user already voted for this option, ignore
+        // id is stored in button customId
         if (pollData.votes[id].includes(interaction.user.id)) return await interaction.deferUpdate()
 
+        // If the user already voted, remove their vote from their previous choice, and add to their current choice
         pollData.votes = pollData.votes.map(option => {
             if (option.includes(interaction.user.id)) option.splice(option.indexOf(interaction.user.id), 1)
             return option
@@ -17,6 +21,7 @@ module.exports = {
 
         pollData.votes[id].push(interaction.user.id)
 
+        // Since arrays are 'mix' type in the database, signal it has been changed to update it
         pollData.markModified('votes')
         await pollData.save().catch(console.error)
 
@@ -25,7 +30,7 @@ module.exports = {
         const totalVotes = Math.max(1, pollData.votes.reduce((votes, curr) => votes + curr.length, 0))
         interaction.message.embeds[0].fields[2].value = totalVotes.toString()
 
-        // changing the numbers on the buttons
+        // updaing the numbers on the buttons
         const buttons = interaction.message.components[0]
         buttons.components = buttons.components.map((button, i) => {
             button.data.label = pollData.votes[i].length.toString()

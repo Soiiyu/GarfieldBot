@@ -32,6 +32,7 @@ module.exports = {
                 .setDescription(suggestion)
             if(attachment && attachment.contentType.includes('image')) embed.setImage(attachment.url)
 
+            // Fetch the suggestion channel for the server and send the suggestion there
             const channel = client.channels.cache.get(guildProfile.suggestChannel)
             await interaction.reply({ content: `Sent your suggestion to ${channel}`, ephemeral: true })
             await channel.send({ embeds: [embed] })

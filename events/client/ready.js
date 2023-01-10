@@ -9,7 +9,6 @@ module.exports = {
 
         client.user.setActivity('to MeowRemix.wav', { type: ActivityType.Listening })
 
-        
         // Adding timeouts for timed polls and removing expired ones
         const polls = await Poll.find({})
         if(polls) {

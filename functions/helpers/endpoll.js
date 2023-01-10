@@ -1,5 +1,6 @@
 module.exports = client => {
     client.endPoll = async (interaction, poll) => {
+        // If passed an interaction, use interaction.message, otherwise fetch the message using the msgId from the poll
         let message = interaction?.message
         if(!interaction) {
             const channel = await client.channels.cache.get(poll.channelId)
@@ -7,6 +8,7 @@ module.exports = client => {
             interaction = message
         }
 
+        // Generating poll results and updating the embed
         const embed = message.embeds[0]
         const highestVotes = [0]
         const totalVotes = Math.max(1, poll.votes.reduce((votes, curr) => {
@@ -37,6 +39,8 @@ module.exports = client => {
 
         await poll.delete().catch(console.error)
         console.log(`[Database] - Deleted poll data`)
+
+        // Fetched messages use .edit() instead of .update(), this is to handle the difference
         if(typeof interaction.update == 'function') await interaction.update({ embeds: [embed], components: [message.components[1]] })
         else await interaction.edit({ embeds: [embed], components: [message.components[1]] })
     }

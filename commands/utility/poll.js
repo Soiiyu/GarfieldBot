@@ -24,6 +24,7 @@ module.exports = {
         const options = interaction.options.getString('options')?.split(/\s*,\s*/).filter(w => w !== '')
         const optionCount = options ? options.length : 2
 
+        // Determine when the poll will end (plan to add user option to set manually)
         const endTime = Date.now() + defaultTime
 
         const embed = new EmbedBuilder()
@@ -79,7 +80,7 @@ module.exports = {
         else if (options.length >= 2 && options.length < 5) {
             // if there are 2-4 options, send a poll with numbered buttons
             embed.setDescription(options.map((option, i) => {
-                // creating a numbered button for each option, with id <i + 1>
+                // creating a numbered button for each option, with id <i>
                 const optionButton = new ButtonBuilder()
                     .setCustomId(`poll-vote_${i}`)
                     .setEmoji(numEmote[i])
@@ -100,6 +101,7 @@ module.exports = {
             actionRow.addComponents(selectMenu)
         }
 
+        // After replying with the poll, using fetchReply, store the sent message id to the database
         await interaction.reply({ embeds: [embed], components: [actionRow, new ActionRowBuilder().addComponents(endPoll)], fetchReply: true })
             .then(async msg => {
                 const pollData = new Poll({

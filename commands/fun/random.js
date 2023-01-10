@@ -34,6 +34,8 @@ module.exports = {
             .setStyle(ButtonStyle.Secondary);
         switch (options.getSubcommand()) {
             case 'number':
+                // Generates a random number in a range between num1 and num2
+                // If there's no num2, Generate from 0 to num 1
                 const num1 = options.getNumber('num1')
                 const num2 = options.getNumber('num2')
 
@@ -46,6 +48,7 @@ module.exports = {
                 await interaction.reply({ embeds: [embed], components: [new ActionRowBuilder().addComponents(button)], ephemeral: true })
                 break
             case 'word':
+                // Choose a random word from the given list of words
                 const words = options.getString('words').split(/\s*,\s*/)
                 if (words.length < 2) return await interaction.reply({ content: 'Please use a list of words seperated by a (,)\nexample: `apple, banana, orange`', ephemeral: true })
                 else {
@@ -57,6 +60,7 @@ module.exports = {
                 }
                 break
             case 'order':
+                // Randomize the order of the given list of words
                 const list = options.getString('words').split(/\s*,\s*/).filter(w => w !== '')
                 if (list.length < 2) return await interaction.reply({ content: 'Please use a list of words seperated by a (,)\nexample: `apple, banana, orange`', ephemeral: true })
                 else {

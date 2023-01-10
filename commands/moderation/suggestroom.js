@@ -32,6 +32,7 @@ module.exports = {
 
         switch (interaction.options.getSubcommand()) {
             case 'set':
+                // Sets the server's suggestion room, and creates a database entry if there is non
                 if (!guildProfile) {
                     guildProfile = new Guild({
                         _id: mongoose.Types.ObjectId(),
@@ -48,6 +49,7 @@ module.exports = {
                 }
                 break;
             case 'remove':
+                // Removes the server suggestion room from the database if there is one
                 if (!guildProfile) {
                     await interaction.reply({ content: 'This server has not set up a suggestion room.', ephemeral: true })
                 } else {
@@ -59,6 +61,7 @@ module.exports = {
                 }
                 break;
             case 'info':
+                // Sends back if the server set up a suggestion room, and which if it has.
                 if (!guildProfile) {
                     await interaction.reply({ content: 'This server has not set up a suggestion room.', ephemeral: true })
                 } else {
