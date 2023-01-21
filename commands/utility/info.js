@@ -43,7 +43,7 @@ module.exports = {
             })
             .forEach(({ name, description, id, options, isSubcommand, default_member_permissions }) => {
                 // If the output is a subcommand, format all the options. Otherwise just send the /command with it's description
-                const output = isSubcommand ? `**${name}**\n${options.map(option => ` -• </${name} ${option.name}:${id}> ${option.description}`).join('\n')}` : `</${name}:${id}> ${description}`
+                const output = isSubcommand ? `**${name}**\n${options.map(option => `ー </${name} ${option.name}:${id}> ${option.description}`).join('\n')}` : `</${name}:${id}> ${description}`
                 
                 // If the command has a default permission, add it to the admin commands instead
                 if (!default_member_permissions) regularCommands.push(output)
