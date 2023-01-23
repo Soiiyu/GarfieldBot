@@ -16,6 +16,14 @@ module.exports = {
                 if(poll.endTime < Date.now()) {
                     console.log(`Detected poll that ended`)
                     client.endPoll(null, poll)
+                } else {
+                    const endTime = poll.endTime - Date.now()
+                    console.log(`Existing poll found, setting timeout for ${endTime}ms`)
+                    client.pollTimeouts[poll.msgId] = setTimeout(() => {
+                        console.log('Poll ended after timeout')
+                        client.endPoll(null, poll)
+                        delete client.pollTimeouts[poll.msgId]
+                    }, endTime)
                 }
             })
         }

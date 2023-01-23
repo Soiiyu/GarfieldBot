@@ -113,7 +113,13 @@ module.exports = {
                     votes: new Array(optionCount).fill(1).map(() => [])
                 })
                 await pollData.save().catch(console.error);
-                console.log(`[Database] - New poll entry with ${optionCount} options`)
+                console.log(`[Database] - New poll entry with ${optionCount} options for ${endTime - Date.now()}ms`)
+                // Creating a timeout to end the poll
+                client.pollTimeouts[pollData.msgId] = setTimeout(() => {
+                    console.log('Poll ended after timeout')
+                    client.endPoll(null, pollData)
+                    delete client.pollTimeouts[pollData.msgId]
+                }, endTime - Date.now())
             })
             .catch(console.error)
     }
