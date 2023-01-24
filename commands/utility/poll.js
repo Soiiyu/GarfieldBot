@@ -96,6 +96,7 @@ module.exports = {
 
             actionRow.addComponents([upvote, downvote])
         } else if (options.length < 2) return await interaction.reply({ content: 'Please provide more options seperated by a (,)\nexample: `pizza, lasagna, orange juice`', ephemeral: true })
+        else if (options.length > 25) return await interaction.reply({ content: 'Too many options, please use less than 25.', ephemeral: true })
         else if (options.length >= 2 && options.length < 5) {
             // if there are 2-4 options, send a poll with numbered buttons
             embed.setDescription(options.map((option, i) => {
