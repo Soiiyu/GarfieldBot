@@ -33,7 +33,7 @@ module.exports = {
         const time = interaction.options.getString('time')
         let endTime = defaultTime
         // if user specifed time try parsing it and setting endTime as their choice
-        // if it's bigger than 2 weeks or an invalid time, let the user know
+        // if it's bigger than a week or an invalid time, let the user know
         // if no time is specified use defaultTime
         if (time) {
             const userTime = parseTime(time)
