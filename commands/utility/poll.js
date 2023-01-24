@@ -18,14 +18,33 @@ module.exports = {
             option
                 .setName("options")
                 .setDescription('(optional) options seperated by (,) [minimum 2]')
+                .setRequired(false))
+        .addStringOption(option =>
+            option
+                .setName("time")
+                .setDescription('(optional) time until the poll ends (5m | 2h | 4d | 1w) [maximum 1 week]')
                 .setRequired(false)),
     async execute(interaction, client) {
         const title = interaction.options.getString('title')
         const options = interaction.options.getString('options')?.split(/\s*,\s*/).filter(w => w !== '')
         const optionCount = options ? options.length : 2
 
-        // Determine when the poll will end (plan to add user option to set manually)
-        const endTime = Date.now() + defaultTime
+        // Determine when the poll will end
+        const time = interaction.options.getString('time')
+        let endTime = defaultTime
+        // if user specifed time try parsing it and setting endTime as their choice
+        // if it's bigger than 2 weeks or an invalid time, let the user know
+        // if no time is specified use defaultTime
+        if (time) {
+            const userTime = parseTime(time)
+            if (!userTime || userTime > 60000 * 60 * 24 * 7) return await interaction.reply({
+                content: userTime ? `Your time is bigger than a week (<t:${Math.round((Date.now() + userTime) / 1000)}:R>), Try something shorter.\nexample: \`5d, 30m, 1.5h, 1w\``
+                    : 'Failed to parse your time. please try again\nexample: \`5d, 30m, 1.5h, 1w\`',
+                ephemeral: true
+            })
+            endTime = userTime
+        }
+        endTime += Date.now()
 
         const embed = new EmbedBuilder()
             .setColor(client.color)
@@ -115,13 +134,35 @@ module.exports = {
                 await pollData.save().catch(console.error);
                 console.log(`[Database] - New poll entry with ${optionCount} options for ${endTime - Date.now()}ms`)
                 // Creating a timeout to end the poll
-                client.pollTimeouts[pollData.msgId] = setTimeout(() => {
+                client.pollTimeouts[pollData.msgId] = setTimeout(async () => {
                     console.log('Poll ended after timeout')
-                    client.endPoll(null, pollData)
-                    delete client.pollTimeouts[pollData.msgId]
+                    // Fetching the poll with updated votes
+                    const poll = await Poll.findOne({ msgId: msg.id });
+                    client.endPoll(null, poll)
+                    delete client.pollTimeouts[poll.msgId]
                 }, endTime - Date.now())
             })
             .catch(console.error)
     }
 
+}
+
+function parseTime(time) {
+    // Matching time for every time a number or float is followed by m, h, d or w.
+    const matches = time.toLowerCase().match(/\d+(\.\d+)?[mhdw]/g)
+    if (matches) {
+        const timeTable = {
+            m: 60000,
+            h: 60000 * 60,
+            d: 60000 * 60 * 24,
+            w: 60000 * 60 * 24 * 7
+        }
+        // for each match, split the time and type (m, h, d, w) and multiply the time accordingly to get the time in ms
+        const totalTime = matches.reduce((total, time) => {
+            const num = parseFloat(time.slice(0, -1))
+            const type = timeTable[time.slice(-1)]
+            return total + num * type
+        }, 0)
+        return totalTime
+    } else return null
 }
