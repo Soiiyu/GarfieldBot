@@ -14,6 +14,7 @@ module.exports = {
         if (interaction.user.id !== id) return await interaction.deferUpdate()
 
         client.endPoll(interaction, pollData)
+        clearTimeout(client.pollTimeouts[pollData.msgId])
         delete client.pollTimeouts[pollData.msgId]
     }
 }
