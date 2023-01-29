@@ -14,6 +14,7 @@ module.exports = {
 
         const actionRow = new ActionRowBuilder()
 
+        // Creating rock paper scissors buttons, and defining their own _rock _paper or _scissors ids
         const rockButton = new ButtonBuilder()
             .setCustomId(`rockpaperscissors_rock`)
             .setEmoji('✊')
