@@ -33,10 +33,13 @@ module.exports = {
         const selectMenu = new SelectMenuBuilder()
             .setCustomId('setup-menu')
             .setPlaceholder('Select a command')
-            .addOptions([
-                {label: 'suggest', value: 'suggest'},
-                {label: 'poll', value: 'poll'}
-            ])
+            .addOptions(client.configCommands.map(({name}) => ({label: name, value: name})))
+        // Create a button to go back to the main page
+        const changeCategory = new ButtonBuilder()
+            .setCustomId(`change-category`)
+            .setEmoji('↩')
+            .setLabel('Change category')
+            .setStyle(ButtonStyle.Secondary);
 
         await interaction.reply({ embeds: [embed], components: [new ActionRowBuilder().addComponents(selectMenu)], ephemeral: true })
     }

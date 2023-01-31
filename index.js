@@ -11,6 +11,10 @@ client.buttons = new Collection()
 client.selectMenus = new Collection()
 client.pollTimeouts = {}
 client.color = 'f88340' // use as default color
+client.configCommands = [ // configurable commands to use in set up, with their database key
+    { name: 'suggest', dataKey: 'suggestChannel' },
+    { name: 'poll', dataKey: 'pollChannel' }
+] 
 
 const functionFolders = fs.readdirSync(`./functions`)
 for (const folder of functionFolders) {

@@ -2,12 +2,6 @@ const Guild = require('../../schemas/guild')
 const { ActionRowBuilder, SelectMenuBuilder, EmbedBuilder } = require('discord.js')
 const mongoose = require('mongoose')
 
-// command name to database key table
-const dataKeys = {
-    suggest: 'suggestChannel',
-    poll: 'pollChannel'
-}
-
 module.exports = {
     data: {
         name: 'textchannels-menu'
@@ -15,8 +9,8 @@ module.exports = {
     async execute(interaction, client) {
         const guildProfile = await Guild.findOne({ guildId: interaction.guild.id });
 
-        // based on the embed title determine which command needs to be set
-        const dataType = dataKeys[interaction.message.embeds[0].data.title]
+        // based on the embed title determine which command needs to be set, using the data key of the command
+        const dataType = client.configCommands.find(({name}) => name == interaction.message.embeds[0].data.title).dataKey
         const updatedValue = interaction.values[0] == '-1' ? null : interaction.values[0]
 
         // if there's a guildProfile, update it accordingly in the database
