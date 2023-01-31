@@ -42,6 +42,9 @@ module.exports = {
             .setLabel('Change category')
             .setStyle(ButtonStyle.Secondary);
 
-        await interaction.update({ embeds: interaction.message.embeds, components: [new ActionRowBuilder().addComponents(selectMenu), new ActionRowBuilder().addComponents(changeCategory)] })
+        // adding the change category button to the existing 2nd row with the back button
+        interaction.message.components[1].components.push(changeCategory)
+
+        await interaction.update({ embeds: interaction.message.embeds, components: [new ActionRowBuilder().addComponents(selectMenu), interaction.message.components[1]] })
     }
 }

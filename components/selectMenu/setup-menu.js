@@ -1,5 +1,5 @@
 const Guild = require('../../schemas/guild')
-const { ActionRowBuilder, SelectMenuBuilder, EmbedBuilder } = require('discord.js')
+const { ActionRowBuilder, SelectMenuBuilder, EmbedBuilder, ButtonBuilder, ButtonStyle } = require('discord.js')
 
 module.exports = {
     data: {
@@ -57,8 +57,16 @@ module.exports = {
             new SelectMenuBuilder()
                 .setCustomId('textchannels-menu')
                 .setPlaceholder('Select a text channel')
-                .addOptions([{label: 'None', value: '-1'}, ...textChannels.map(({ name, id }) => ({ label: name, value: id }))])
+                .addOptions([{ label: 'None', value: '-1' }, ...textChannels.map(({ name, id }) => ({ label: name, value: id }))])
 
-        await interaction.update({embeds: [embed], components: [new ActionRowBuilder().addComponents(selectMenu)]})
+        // Create a button to go back to the main page and adding it the the 2nd action row
+        const back = new ButtonBuilder()
+            .setCustomId(`setup-back`)
+            .setEmoji('⏹')
+            .setLabel('Back to menu')
+            .setStyle(ButtonStyle.Danger);
+
+        // Updaing message with the selected command, changing select menu to either category or text channels, and re-adding the menu back button
+        await interaction.update({ embeds: [embed], components: [new ActionRowBuilder().addComponents(selectMenu), new ActionRowBuilder().addComponents(back)] })
     }
 }

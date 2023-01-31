@@ -1,4 +1,4 @@
-const { ActionRowBuilder, SelectMenuBuilder, EmbedBuilder } = require('discord.js')
+const { ActionRowBuilder, SelectMenuBuilder } = require('discord.js')
 
 module.exports = {
     data: {
@@ -41,6 +41,9 @@ module.exports = {
             .setPlaceholder('Select a category')
             .addOptions(categories.map(({ name, id }) => ({ label: name, value: id })))
 
-        await interaction.update({embeds: interaction.message.embeds, components: [new ActionRowBuilder().addComponents(selectMenu)] })
+        // removing the change category button, assuming it's the last one
+        interaction.message.components[1].components.pop()
+
+        await interaction.update({embeds: interaction.message.embeds, components: [new ActionRowBuilder().addComponents(selectMenu), interaction.message.components[1]] })
     }
 }

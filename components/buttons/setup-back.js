@@ -1,11 +1,10 @@
 const Guild = require('../../schemas/guild')
-const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder, ActionRowBuilder, SelectMenuBuilder } = require('discord.js')
+const { ActionRowBuilder, SelectMenuBuilder, EmbedBuilder } = require('discord.js')
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('setup')
-        .setDescription('Configure some command behavior.')
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+    data: {
+        name: 'setup-back'
+    },
     async execute(interaction, client) {
         const guildProfile = await Guild.findOne({ guildId: interaction.guild.id });
 
@@ -34,6 +33,6 @@ module.exports = {
             .setPlaceholder('Select a command')
             .addOptions(client.configCommands.map(({name}) => ({label: name, value: name})))
 
-        await interaction.reply({ embeds: [embed], components: [new ActionRowBuilder().addComponents(selectMenu)], ephemeral: true })
+        await interaction.update({ embeds: [embed], components: [new ActionRowBuilder().addComponents(selectMenu)], ephemeral: true })
     }
 }
