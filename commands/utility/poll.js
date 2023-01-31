@@ -1,3 +1,4 @@
+const Guild = require('../../schemas/guild')
 const Poll = require('../../schemas/polls')
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder } = require('discord.js')
 const mongoose = require('mongoose')
@@ -25,6 +26,7 @@ module.exports = {
                 .setDescription('(optional) time until the poll ends (5m | 2h | 4d | 1w) [maximum 1 week]')
                 .setRequired(false)),
     async execute(interaction, client) {
+        const guildProfile = await Guild.findOne({ guildId: interaction.guild.id });
         const title = interaction.options.getString('title')
         const options = interaction.options.getString('options')?.split(/\s*,\s*/).filter(w => w !== '')
         const optionCount = options ? options.length : 2
@@ -121,13 +123,20 @@ module.exports = {
             actionRow.addComponents(selectMenu)
         }
 
+        // if the server set up a poll channel, send to the specified channel instead of the current room
+        const channel = guildProfile && guildProfile.pollChannel ?
+        client.channels.cache.get(guildProfile.pollChannel) :
+        null
+        
+        if(channel) await interaction.reply({ content: `Sent your poll to ${channel}`, ephemeral: true })
+
         // After replying with the poll, using fetchReply, store the sent message id to the database
-        await interaction.reply({ embeds: [embed], components: [actionRow, new ActionRowBuilder().addComponents(endPoll)], fetchReply: true })
+        await routeReply(channel, { embeds: [embed], components: [actionRow, new ActionRowBuilder().addComponents(endPoll)], fetchReply: true }, interaction)
             .then(async msg => {
                 const pollData = new Poll({
                     _id: mongoose.Types.ObjectId(),
                     msgId: msg.id,
-                    channelId: interaction.channel.id,
+                    channelId: channel ? channel.id : interaction.channel.id,
                     pollType: options ? (options.length < 5 ? 'buttons' : 'selectmenu') : 'yesno',
                     endTime,
                     votes: new Array(optionCount).fill(1).map(() => [])
@@ -146,6 +155,11 @@ module.exports = {
             .catch(console.error)
     }
 
+}
+
+// If there is a channel, send data to the channel, if not, reply to the interaction
+async function routeReply(channel, data, interaction) {
+    return channel ? await channel.send(data) : await interaction.reply(data)
 }
 
 function parseTime(time) {
