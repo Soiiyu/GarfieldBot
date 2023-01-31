@@ -32,8 +32,8 @@ module.exports = {
             // If a channel is found outside of a category, add a 'uncategorized' category option
             if (channel.type == 0 && channel.parentId == null && !categories.find(category => category.name == 'uncategorised')) categories.push({
                 type: 4,
-                name: 'uncategorised',
-                id: null,
+                name: 'Uncategorised',
+                id: '-1',
                 parentId: null
             })
             return {

@@ -11,7 +11,7 @@ module.exports = {
         // Set field to indicate to user which category they are choosing from
         interaction.message.embeds[0].data.fields = [{
             name: 'Choosing from category',
-            value: `<#${interaction.values[0]}>`
+            value: interaction.values[0] == '-1' ? 'Uncategorized' : `<#${interaction.values[0]}>`
         }]
 
         // Getting all server channels to put in the select menu
