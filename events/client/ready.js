@@ -7,7 +7,8 @@ module.exports = {
     async execute(client) {
         console.log(`Ready as ${client.user.tag} 🐈`)
 
-        client.user.setActivity('to MeowRemix.wav', { type: ActivityType.Listening })
+        // Setting the activity
+        client.user.setActivity('the new v2 update!', { type: ActivityType.Playing })
 
         // Adding timeouts for timed polls and removing expired ones
         const polls = await Poll.find({})
