@@ -34,9 +34,18 @@ module.exports = {
             if (attachment && attachment.contentType.includes('image')) embed.setImage(attachment.url)
 
             // Fetch the suggestion channel for the server and send the suggestion there
-            const channel = client.channels.cache.get(guildProfile.suggestChannel)
-            await interaction.reply({ content: `Sent your suggestion to ${channel}`, ephemeral: true })
-            await channel.send({ embeds: [embed] })
+            // If the command is sent in the guildProfile.suggestChannel, no need to fetch it and informing the user it was sent
+            const channel = guildProfile.suggestChannel != interaction.channel.id ?
+                client.channels.cache.get(guildProfile.suggestChannel) :
+                null
+
+            if (channel) {
+                await interaction.reply({ content: `Sent your suggestion to ${channel}`, ephemeral: true })
+                await channel.send({ embeds: [embed] })
+            } else {
+                await interaction.reply({ embed: [embed] })
+            }
+
         } else await interaction.reply({ content: 'This server has not set up a suggestion room.', ephemeral: true })
     }
 }

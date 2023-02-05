@@ -124,7 +124,8 @@ module.exports = {
         }
 
         // if the server set up a poll channel, send to the specified channel instead of the current room
-        const channel = guildProfile && guildProfile.pollChannel ?
+        // if there is a pollChannel, and the room the command is sent in is not the same as it, get the channel
+        const channel = guildProfile && guildProfile.pollChannel && guildProfile.pollChannel !== interaction.channel.id ?
         client.channels.cache.get(guildProfile.pollChannel) :
         null
         
