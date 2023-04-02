@@ -11,7 +11,7 @@ module.exports = {
         // display different descriptions based on which command was picked
         const commandTypes = {
             suggest: [
-                'Set up which channel suggestion will be send to',
+                'Set up which channel suggestion will be sent to',
                 'If no channel is set, suggestions won\'t be sent'
             ].join('\n'),
             poll: [
