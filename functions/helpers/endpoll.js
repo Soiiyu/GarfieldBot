@@ -12,7 +12,7 @@ module.exports = client => {
                 message = null
             }
         }
-
+        
         if (message) { // if the message was not manually deleted
             // Generating poll results and updating the embed 
             const embed = message.embeds[0]
@@ -44,8 +44,13 @@ module.exports = client => {
             message.components[1].components[0].data.disabled = true
 
             // Fetched messages use .edit() instead of .update(), this is to handle the difference
-            if (typeof interaction.update == 'function') await interaction.update({ embeds: [embed], components: [message.components[1]] })
-            else await interaction.edit({ embeds: [embed], components: [message.components[1]] })
+            try {
+                if (typeof interaction.update == 'function') await interaction.update({ embeds: [embed], components: [message.components[1]] })
+                else await interaction.edit({ embeds: [embed], components: [message.components[1]] })
+            } catch (error) {
+                console.log('could not edit poll message', error)
+            }
+
         }
 
         await poll.delete().catch(console.error)
