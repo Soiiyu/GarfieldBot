@@ -4,6 +4,12 @@ const choiceMessages = {
     scissors: '✌ Scissors'
 }
 
+const winTable = {
+    rock: 'scissors',
+    paper: 'rock',
+    scissors: 'paper'
+}
+
 module.exports = {
     data: {
         name: 'rockpaperscissors'
@@ -23,44 +29,47 @@ module.exports = {
         const computerChoice = ['rock', 'paper', 'scissors'][Math.floor(Math.random() * 3)]
 
         // Determining who won, and storing it in results
-        let results
+        const results = {
+            condition: null,
+            message: '',
+            color: ''
+        }
 
-        if (playerChoice === computerChoice) {
-            results = "It's a tie!"
-        } else if (playerChoice === 'rock' && computerChoice === 'scissors') {
-            results = "You win!"
-        } else if (playerChoice === 'rock' && computerChoice === 'paper') {
-            results = "You lose!"
-        } else if (playerChoice === 'paper' && computerChoice === 'rock') {
-            results = "You win!"
-        } else if (playerChoice === 'paper' && computerChoice === 'scissors') {
-            results = "You lose!"
-        } else if (playerChoice === 'scissors' && computerChoice === 'paper') {
-            results = "You win!"
-        } else if (playerChoice === 'scissors' && computerChoice === 'rock') {
-            results = "You lose!"
+        if (computerChoice === winTable[playerChoice]) {
+            results.condition = 'player'
+            results.message = 'You win!'
+            results.color = parseInt("66ff66", 16) // green
+
+        } else if (computerChoice === playerChoice) {
+            results.condition = 'tie'
+            results.message = "It's a tie!"
+            results.color = parseInt("66c2ff", 16) // blue
+
+        } else {
+            results.condition = 'garfield'
+            results.message = "You lose!"
+            results.color = parseInt("ff5050", 16) // red
+
         }
 
         // Clearing the gif from the embed, setting the description to the results
         // and adding fields to display the choices
-        interaction.message.embeds[0].data.description = `**__Results:__** \n ${results}`
+        interaction.message.embeds[0].data.description = `**__Results:__** \n ${results.message}`
         interaction.message.embeds[0].data.image = {}
         interaction.message.embeds[0].data.fields = [
-            {
-                name: "You chose:",
-                value: choiceMessages[playerChoice],
+            {   // Display a crown near the winner's name and bold their choice.
+                name: '\u200b',
+                value: `<@${interaction.user.id}> ${results.condition == 'player' ? '👑' : ''}\n${client.boldText(choiceMessages[playerChoice], results.condition == 'player')}`,
                 inline: true
             },
             {
-                name: "I chose:",
-                value: choiceMessages[computerChoice],
+                name: '\u200b',
+                value: `<@${client.user.id}> ${results.condition == 'garfield' ? '👑' : ''}\n${client.boldText(choiceMessages[computerChoice], results.condition == 'garfield')}`,
                 inline: true
             }
         ]
         // Changing the color of the embed based on the results (green > player wins, red > player loses, blue > tie)
-        if (results == "You win!") interaction.message.embeds[0].data.color = parseInt("66ff66", 16)
-        else if (results == "You lose!") interaction.message.embeds[0].data.color = parseInt("ff5050", 16)
-        else if (results == "It's a tie!") interaction.message.embeds[0].data.color = parseInt("66c2ff", 16)
+        interaction.message.embeds[0].data.color = results.color
 
         // Waiting 4 seconds and updating the message to display the results after playing the gif
         setTimeout(async () => {
