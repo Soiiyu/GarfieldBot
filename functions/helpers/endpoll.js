@@ -24,13 +24,13 @@ module.exports = client => {
             switch (poll.pollType) {
                 case 'yesno':
                     const [yes, no] = poll.votes
-                    embed.data.description = `${boldText(`<:Yes:712682828302909481> ${Math.round(100 * yes.length / totalVotes)}%`, yes.length > no.length)} - ${boldText(`<:No:712682828332138586> ${Math.round(100 * no.length / totalVotes)}%`, no.length > yes.length)}`
+                    embed.data.description = `${client.boldText(`<:Yes:712682828302909481> ${Math.round(100 * yes.length / totalVotes)}%`, yes.length > no.length)} - ${boldText(`<:No:712682828332138586> ${Math.round(100 * no.length / totalVotes)}%`, no.length > yes.length)}`
                     break
                 case 'buttons':
                 case 'selectmenu':
                     embed.data.description = embed.data.description
                         .split('\n')
-                        .map((option, i) => boldText(`[${Math.round(100 * poll.votes[i].length / totalVotes)}%] ${option}`, poll.votes[i].length == highestVotes[0] && poll.votes[i].length !== 0))
+                        .map((option, i) => client.boldText(`[${Math.round(100 * poll.votes[i].length / totalVotes)}%] ${option}`, poll.votes[i].length == highestVotes[0] && poll.votes[i].length !== 0))
                         .join('\n')
                     break
             }
@@ -56,9 +56,4 @@ module.exports = client => {
         await poll.delete().catch(console.error)
         console.log(`[Database] - Deleted poll data ${message ? 'and poll message updated' : 'but the poll message was already deleted'}`)
     }
-}
-
-function boldText(text, condition) {
-    text = text.replace(/\*\*/g, '')
-    return condition ? `**${text}**` : text
 }

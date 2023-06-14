@@ -7,4 +7,8 @@ module.exports = client => {
         }
         return array
     }
+    client.boldText = (text, condition) => {
+        text = text.replace(/\*\*/g, '')
+        return condition ? `**${text}**` : text
+    }
 }
