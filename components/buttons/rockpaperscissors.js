@@ -1,3 +1,5 @@
+const quotes = require('./rockpaperscissors-quotes.json')
+
 const choiceMessages = {
     rock: '✊ Rock',
     paper: '🖐 Paper',
@@ -54,7 +56,9 @@ module.exports = {
 
         // Clearing the gif from the embed, setting the description to the results
         // and adding fields to display the choices
-        interaction.message.embeds[0].data.description = `**__Results:__** \n ${results.message}`
+        const currentQuote = quotes[results.condition]
+
+        interaction.message.embeds[0].data.description = `**__${results.message}__** \n ${currentQuote[Math.floor(Math.random() * currentQuote.length)]}`
         interaction.message.embeds[0].data.image = {}
         interaction.message.embeds[0].data.fields = [
             {   // Display a crown near the winner's name and bold their choice.
