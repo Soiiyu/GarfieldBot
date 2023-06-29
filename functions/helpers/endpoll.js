@@ -24,7 +24,7 @@ module.exports = client => {
             switch (poll.pollType) {
                 case 'yesno':
                     const [yes, no] = poll.votes
-                    embed.data.description = `${client.boldText(`<:Yes:712682828302909481> ${Math.round(100 * yes.length / totalVotes)}%`, yes.length > no.length)} - ${boldText(`<:No:712682828332138586> ${Math.round(100 * no.length / totalVotes)}%`, no.length > yes.length)}`
+                    embed.data.description = `${client.boldText(`<:Yes:712682828302909481> ${Math.round(100 * yes.length / totalVotes)}%`, yes.length > no.length)} - ${client.boldText(`<:No:712682828332138586> ${Math.round(100 * no.length / totalVotes)}%`, no.length > yes.length)}`
                     break
                 case 'buttons':
                 case 'selectmenu':
