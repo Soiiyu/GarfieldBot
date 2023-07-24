@@ -6,7 +6,7 @@ module.exports = {
         name: 'textchannels-menu'
     },
     async execute(interaction, client) {
-        const guildProfile = await Guild.findOne({ guildId: interaction.guild.id });
+        let guildProfile = await Guild.findOne({ guildId: interaction.guild.id });
 
         // based on the embed title determine which command needs to be set, using the data key of the command
         const dataType = client.configCommands.find(({name}) => name == interaction.message.embeds[0].data.title).dataKey
