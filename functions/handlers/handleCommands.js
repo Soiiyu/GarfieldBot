@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { TOKEN, TOKENC, CLIENT, CLIENTC, TESTING } = process.env
 const { REST } = require('@discordjs/rest')
-const { Routes } = require('discord-api-types/v10')
+const { Routes } = require('discord-api-types/v9')
 const fs = require('fs')
 
 module.exports = (client) => {
